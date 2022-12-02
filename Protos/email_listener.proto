@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "TraderBot.EmailListenerProto";
+
+package email_listener;
+
+service EmailListenerGrpc {
+  rpc TickEmailCollectJob (TickEmailCollectJobRequest) returns (TickEmailCollectJobResponse);
+}
+
+message TickEmailCollectJobRequest {
+}
+
+message TickEmailCollectJobResponse {
+  bool result = 1;
+
+  string error_code = 20;
+  string error_message = 21;
+}

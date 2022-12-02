@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "types.proto";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "TraderBot.BinanceConnectProto";
+
+package binance_connect;
+
+service SpotGrpc {
+  rpc OpenSpot (OpenSpotRequest) returns (OpenSpotResponse);
+  rpc GetUsdtBalance (google.protobuf.Empty) returns (GetUsdtBalanceResponse);
+}
+
+
+
+message OpenSpotRequest {
+  string trading_symbol = 1;
+  types.OrderSideType order_side = 2;
+  types.Decimal price = 3;
+  types.Decimal quantity = 4; 
+}
+
+message OpenSpotResponse {
+  bool result = 1;
+
+  optional uint64 order_id = 2;
+  optional string client_order_id = 3;
+
+  string error_code = 20;
+  string error_message = 21;
+}
+
+message GetUsdtBalanceResponse {
+  bool result = 1;
+
+  types.Decimal balance = 2;
+
+  string error_code = 20;
+  string error_message = 21;
+}
+

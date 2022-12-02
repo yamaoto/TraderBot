@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "TraderBot.AdminProto";
+
+package admin;
+
+service AdminGrpc {
+  rpc GetOrders(google.protobuf.Empty) returns (GetOrdersResponse);
+}
+
+message Order {
+  string id = 1;
+  string trading_symbol = 2;
+  string order_side = 3;
+  string price = 4;
+  string quantity = 5;
+  string from = 6;
+  string createdAt = 7;
+}
+
+message GetOrdersResponse {
+  repeated Order orders = 1;
+}

@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+import "types.proto";
+
+option csharp_namespace = "TraderBot.OrderControllerProto";
+
+package order_controller;
+
+service OrderControllerGrpc {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+}
+
+message CreateOrderRequest {
+  string trading_symbol = 1;
+  types.OrderSideType order_side = 2;
+  types.Decimal price = 3;
+  string from = 4;
+}
+
+
+message CreateOrderResponse {
+  bool result = 1;
+
+  string error_code = 20;
+  string error_message = 21;
+}

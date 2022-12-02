@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "TraderBot.TypesProto";
+
+package types;
+
+enum OrderSideType {
+  SELL = 0;
+  BUY = 1;
+}
+
+message Decimal {
+  sint32 b1 = 1;
+  sint32 b2 = 2;
+  sint32 b3 = 3;
+  sint32 b4 = 4;
+}
