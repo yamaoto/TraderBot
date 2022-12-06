@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Options;
@@ -15,17 +14,19 @@ public class CreateOrder
 {
     private readonly ILogger<CreateOrder> _logger;
     private readonly IOrderDal _orderDal;
-    private readonly GetExchangeStepSize _getExchangeStepSize;
+    private readonly IGetExchangeStepSize _getExchangeStepSize;
     private readonly SpotGrpc.SpotGrpcClient _spotServiceClient;
     private readonly ITelegramService _telegramService;
-    private readonly IOptionsSnapshot<TradingOptions> _tradingOptions;
+    private readonly IOptions<TradingOptions> _tradingOptions;
+    private readonly IOptions<FollowOptions> _followOptions;
 
     public CreateOrder(
         IOrderDal orderDal,
-        GetExchangeStepSize getExchangeStepSize,
+        IGetExchangeStepSize getExchangeStepSize,
         SpotGrpc.SpotGrpcClient spotServiceClient,
         ITelegramService telegramService,
-        IOptionsSnapshot<TradingOptions> tradingOptions,
+        IOptions<TradingOptions> tradingOptions,
+        IOptions<FollowOptions> followOptions,
         ILogger<CreateOrder> logger
     )
     {
@@ -34,11 +35,16 @@ public class CreateOrder
         _spotServiceClient = spotServiceClient;
         _telegramService = telegramService;
         _tradingOptions = tradingOptions;
+        _followOptions = followOptions;
         _logger = logger;
     }
 
     public async Task CreateOrderAsync(CreateOrderRequest request)
     {
+        if (!_followOptions.Value.Allowed.Contains(request.From))
+        {
+            return;
+        }
         var orderSide = request.OrderSide == OrderSideType.Sell ? "SELL" : "BUY";
         var price = request.Price.ConvertToRegularDecimal();
         var existingOrder = await _orderDal.FindNewOrDraftOrderAsync(request.TradingSymbol, orderSide,
@@ -51,7 +57,6 @@ public class CreateOrder
             _logger.LogInformation("Duplicating order message delivery found");
             return;
         }
-
 
         var balance = await GetFuturesBalanceAsync();
         var tradingOptions = _tradingOptions.Value.GetOptionsForSymbol(request.TradingSymbol);

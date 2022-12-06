@@ -39,8 +39,9 @@ public class FuturesTradeClient : BinanceService
         {
             json = await SendSignedAsync<string>("/fapi/v1/order", HttpMethod.Post, parameters);
         }
-        catch (Exception e)
+        catch (Exception)
         {
+            // Debug breakpoint
             throw;
         }
         var newOrderResponse = JsonConvert.DeserializeObject<FuturesNewOrderResponse>(json);

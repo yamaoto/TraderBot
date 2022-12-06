@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 builder.Services.Configure<DependencyOptions>(builder.Configuration.GetSection("Dependency"));
 builder.Services.Configure<TradingOptions>(builder.Configuration.GetSection("Trading"));
+builder.Services.Configure<FollowOptions>(builder.Configuration.GetSection("Follow"));
 builder.Services.AddGrpcClient<SpotGrpc.SpotGrpcClient>((services, options) =>
 {
     var dependencyOptions = services.GetService<IOptions<DependencyOptions>>();
@@ -22,7 +23,7 @@ builder.Services.AddGrpcClient<SpotGrpc.SpotGrpcClient>((services, options) =>
 await builder.Services.AddAndConfigureRavenDbAsync(builder.Configuration);
 builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Telegram"));
 builder.Services.AddTransient<ITelegramService, TelegramService>();
-builder.Services.AddSingleton<GetExchangeStepSize>();
+builder.Services.AddSingleton<IGetExchangeStepSize, GetExchangeStepSize>();
 builder.Services.AddHttpClient<TelegramService>();
 builder.Services.AddHttpClient<GetExchangeStepSize>();
 

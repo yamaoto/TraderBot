@@ -4,7 +4,7 @@ using TraderBot.OrderController.Infrastructure;
 
 namespace TraderBot.OrderController.Commands;
 
-public class GetExchangeStepSize
+public class GetExchangeStepSize : IGetExchangeStepSize
 {
     private readonly HttpClient _httpClient;
     private readonly Dictionary<string, decimal> _exchangeStepSize = new (StringComparer.InvariantCultureIgnoreCase);
@@ -21,7 +21,7 @@ public class GetExchangeStepSize
         {
             var exchangeInfo =
                 await _httpClient.GetFromJsonAsync<ExchangeInfoModel>("https://api.binance.com/api/v3/exchangeInfo");
-            foreach (var exchangeSymbol in exchangeInfo.Symbols)
+            foreach (var exchangeSymbol in exchangeInfo!.Symbols)
             {
                 var lotSize = exchangeSymbol.Filters.FirstOrDefault(f => f.FilterType == "LOT_SIZE");
                 if (lotSize != null && decimal.TryParse(lotSize.StepSize, CultureInfo.InvariantCulture, out var stepSize))

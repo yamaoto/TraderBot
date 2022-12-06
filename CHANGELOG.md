@@ -8,6 +8,8 @@ Use [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/) style for any chang
 
 ### Added
 
++ Control trade copy by allow list. Only allowed user trades will be copied
+
 ### Changed
 
 ### Removed
