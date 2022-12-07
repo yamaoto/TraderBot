@@ -9,17 +9,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Binance.Spot" Version="2.0.0"/>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0"/>
+        <PackageReference Include="Binance.Spot" Version="2.0.0" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TraderBot.Abstractions\TraderBot.Abstractions.csproj"/>
+        <ProjectReference Include="..\TraderBot.Abstractions\TraderBot.Abstractions.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\Protos\types.proto" Link="Protos\types.proto"/>
-        <Protobuf Include="..\Protos\binance_connect.proto" Link="Protos\binance_connect.proto"/>
+        <Protobuf Include="..\Protos\types.proto" Link="Protos\types.proto" />
+        <Protobuf Include="..\Protos\binance_connect.proto" Link="Protos\binance_connect.proto" />
     </ItemGroup>
 
 </Project>

@@ -29,7 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{0B3345
 	ProjectSection(SolutionItems) = preProject
 		Protos\order_controller.proto = Protos\order_controller.proto
 		Protos\binance_connect.proto = Protos\binance_connect.proto
-		Protos\email_listener.proto = Protos\email_listener.proto
 		Protos\types.proto = Protos\types.proto
 		Protos\admin.proto = Protos\admin.proto
 	EndProjectSection

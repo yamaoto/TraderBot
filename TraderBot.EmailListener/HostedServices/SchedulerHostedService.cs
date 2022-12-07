@@ -1,37 +1,37 @@
 using System.Diagnostics;
 using TraderBot.EmailListener.Commands;
 
-namespace TraderBot.EmailListener.Infrastructure;
+namespace TraderBot.EmailListener.HostedServices;
 
 public class SchedulerHostedService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
-    private ILogger<SchedulerHostedService> _logger;
+    private readonly ILogger<SchedulerHostedService> _logger;
     public SchedulerHostedService(IServiceProvider serviceProvider, ILogger<SchedulerHostedService> logger)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        while (!cancellationToken.IsCancellationRequested)
         {
-            await Task.Delay(3000, stoppingToken);
+            await Task.Delay(100, cancellationToken);
             using var scope = _serviceProvider.CreateScope();
             var collectProcessCommand = scope.ServiceProvider.GetRequiredService<CollectProcessCommand>();
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             try
             {
-                await collectProcessCommand.CollectProcessAsync(DateTime.Today.AddHours(-1), "");
+                await collectProcessCommand.CollectProcessAsync();
             }
             catch (Exception e)
             {
-                _logger.LogError("Scheduler job error. Original error: {error}", e);
+                _logger.LogError("Scheduler job error. Original error: {Error}", e);
             }
             stopWatch.Stop();
-            _logger.LogInformation("Job execution time {time} ms ", stopWatch.ElapsedMilliseconds);
+            _logger.LogInformation("Job execution time {ElapsedMilliseconds} ms ", stopWatch.ElapsedMilliseconds);
         }
     }
 }

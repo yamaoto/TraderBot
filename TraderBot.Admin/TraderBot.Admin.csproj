@@ -8,15 +8,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0"/>
-        <PackageReference Include="Grpc.AspNetCore.Web" Version="2.49.0"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+        <PackageReference Include="Grpc.AspNetCore.Web" Version="2.49.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf Include="..\Protos\admin.proto" Link="Protos\admin.proto"/>
+        <Protobuf Include="..\Protos\admin.proto" Link="Protos\admin.proto" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TraderBot.RavenDb\TraderBot.RavenDb.csproj"/>
+        <ProjectReference Include="..\TraderBot.RavenDb\TraderBot.RavenDb.csproj" />
     </ItemGroup>
 </Project>
