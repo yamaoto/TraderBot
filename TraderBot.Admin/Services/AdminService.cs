@@ -1,3 +1,4 @@
+using System.Globalization;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using TraderBot.AdminProto;
@@ -7,20 +8,27 @@ namespace TraderBot.Admin.Services;
 
 public class AdminService : AdminGrpc.AdminGrpcBase
 {
-    private readonly ILogger<AdminService> _logger;
     private readonly IOrderDal _orderDal;
 
     public AdminService(
-        ILogger<AdminService> logger,
-        IOrderDal orderDal)
+        IOrderDal orderDal
+        )
     {
-        _logger = logger;
         _orderDal = orderDal;
     }
 
     public override async Task<GetOrdersResponse> GetOrders(Empty request, ServerCallContext context)
     {
-        var orders = (await _orderDal.GetOrdersAsync()).Select(s => new Order());
+        var orders = (await _orderDal.GetOrdersAsync()).Select(s => new Order()
+        {
+            CreatedAt = s.OrderCreatedAt.ToString("O"),
+            From = s.CopyFrom,
+            Id = s.Id,
+            OrderSide = s.OrderType,
+            Price = s.Price.ToString("F5", CultureInfo.InvariantCulture),
+            Quantity = s.Quantity.ToString("F5", CultureInfo.InvariantCulture),
+            TradingSymbol = s.Symbol
+        });
         return new GetOrdersResponse
         {
             Orders = { orders }

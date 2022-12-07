@@ -14,5 +14,7 @@ Use [Keep a Changelog](https://keepachangelog.com/ru/1.0.0/) style for any chang
 
 ### Changed
 
++ Admin: Fixed orders mapping
+
 ### Removed
 
