@@ -50,6 +50,7 @@
             <p>{order.orderSide} {order.tradingSymbol}</p>
             <p>Price: {order.price}</p>
             <p>Quantity: {order.quantity}</p>
+            <p>Status: {order.status}</p>
         </div>
     {/each}
 </div>

@@ -27,7 +27,8 @@ public class AdminService : AdminGrpc.AdminGrpcBase
             OrderSide = s.OrderType,
             Price = s.Price.ToString("F5", CultureInfo.InvariantCulture),
             Quantity = s.Quantity.ToString("F5", CultureInfo.InvariantCulture),
-            TradingSymbol = s.Symbol
+            TradingSymbol = s.Symbol,
+            Status = s.Status.ToString("F")
         });
         return new GetOrdersResponse
         {
