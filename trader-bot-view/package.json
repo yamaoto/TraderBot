@@ -8,6 +8,13 @@
     "build": "vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.8.2",
+    "@protobuf-ts/plugin": "^2.8.2",
+    "google-protobuf": "~3.14.0",
+    "grpc-web": "~1.4.2",
+    "svelte-markdown": "^0.2.3"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.1.0",
     "svelte": "^3.52.0",

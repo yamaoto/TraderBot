@@ -1,3 +1,21 @@
+# Development
+
+
+## gRPC-Web
+
+Requirements:
+
+* `protoc`
+* `protobuf-ts` plugin. https://github.com/timostamm/protobuf-ts
+
+> npm install @protobuf-ts/plugin
+
+Build message code
+
+    npx protoc --plugin="protoc-gen-ts=./node_modules/.bin/protoc-gen-ts" \
+    --ts_out="./src/admin-client" \
+    -I=../Protos ../Protos/admin.proto
+
 # Svelte + Vite
 
 This template should help get you started developing with Svelte in Vite.

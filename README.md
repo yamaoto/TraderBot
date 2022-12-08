@@ -121,5 +121,5 @@ This project is not covered by the security advisory policy. Use at your own ris
 
 License described in [LICENSE.md](./LICENSE.md)
 
-# Documentation
+# Development
 
