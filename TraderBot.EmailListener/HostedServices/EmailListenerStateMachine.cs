@@ -5,12 +5,13 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using TraderBot.EmailListener.Commands;
 using TraderBot.EmailListener.Infrastructure;
+using TraderBot.RavenDb.MailBoxDomain;
 
 namespace TraderBot.EmailListener.HostedServices;
 
 public class EmailListenerStateMachine : IDisposable
 {
-    private readonly MailBoxSettings _settings;
+    private readonly MailBoxSettingRecord _settings;
     private readonly EmailChannel _emailChannel;
     private readonly IOptions<MailBoxOptions> _mailBoxOptions;
 
@@ -20,7 +21,7 @@ public class EmailListenerStateMachine : IDisposable
     private string? _lastProcessedEmail;
 
     public EmailListenerStateMachine(EmailChannel emailChannel, IOptions<MailBoxOptions> mailBoxOptions,
-        MailBoxSettings settings, EmailListenerStatus state)
+        MailBoxSettingRecord settings, EmailListenerStatus state)
     {
         _emailChannel = emailChannel;
         _mailBoxOptions = mailBoxOptions;
@@ -76,7 +77,7 @@ public class EmailListenerStateMachine : IDisposable
         _imapClient = new ImapClient(new NullProtocolLogger());
         await _imapClient.ConnectAsync(_mailBoxOptions.Value.Host, _mailBoxOptions.Value.Port,
             SecureSocketOptions.SslOnConnect, cancellationToken);
-        await _imapClient.AuthenticateAsync(_settings.Username, _settings.AppPassword, cancellationToken);
+        await _imapClient.AuthenticateAsync(_settings.Username, _settings.Password, cancellationToken);
         await _imapClient.Inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
     }
 

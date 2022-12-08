@@ -6,6 +6,7 @@ using Raven.Client.Exceptions;
 using Raven.Client.Exceptions.Database;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
+using TraderBot.RavenDb.MailBoxDomain;
 using TraderBot.RavenDb.OrderDomain;
 
 namespace TraderBot.RavenDb;
@@ -24,6 +25,7 @@ public static class RavenDb
         }.Initialize();
         services.AddSingleton(store);
         services.AddTransient<IOrderDal, RavenOrderDal>();
+        services.AddTransient<IMailBoxDal, RavenMailBoxDal>();
 
         await EnsureDatabaseExistsAsync(store, ravenDbConfiguration);
     }

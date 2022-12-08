@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{0B3345
 		Protos\binance_connect.proto = Protos\binance_connect.proto
 		Protos\types.proto = Protos\types.proto
 		Protos\admin.proto = Protos\admin.proto
+		Protos\mail_box.proto = Protos\mail_box.proto
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraderBot.Admin", "TraderBot.Admin\TraderBot.Admin.csproj", "{9EEFE1BD-101E-487D-BA63-B7BDF104783D}"

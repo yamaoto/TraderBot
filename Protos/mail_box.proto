@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "TraderBot.MailBoxProto";
+
+package mail_box;
+
+service MailBoxGrpc {
+  rpc GetMailBoxes(google.protobuf.Empty) returns (GetMailBoxesResponse);
+  rpc UpsertMailBox(MailBoxSettings) returns (UpsertMailBoxResponse);
+  rpc DeleteMailBox(DeleteMailBoxRequest) returns (DeleteMailBoxResponse);
+}
+
+message DeleteMailBoxRequest {
+  string name = 1;
+}
+
+message DeleteMailBoxResponse {
+  bool result = 1;
+
+  string error_code = 20;
+  string error_message = 21;
+}
+
+message GetMailBoxesResponse {
+  bool result = 1;
+  repeated MailBoxSettings items = 2;
+
+  string error_code = 20;
+  string error_message = 21;
+}
+
+message UpsertMailBoxResponse {
+  bool result = 1;
+
+  string error_code = 20;
+  string error_message = 21;
+}
+
+message MailBoxSettings {
+  string name = 1;
+  string username = 2;
+  string password = 3;
+  string binance_api_key = 4;
+  string binance_api_secret = 5;
+  repeated string allowed_copy_from = 6;
+}

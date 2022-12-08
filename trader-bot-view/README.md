@@ -14,7 +14,7 @@ Build message code
 
     npx protoc --plugin="protoc-gen-ts=./node_modules/.bin/protoc-gen-ts" \
     --ts_out="./src/admin-client" \
-    -I=../Protos ../Protos/admin.proto
+    -I=../Protos ../Protos/admin.proto ../Protos/mail_box.proto
 
 # Svelte + Vite
 

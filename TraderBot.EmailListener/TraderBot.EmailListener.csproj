@@ -11,12 +11,12 @@
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
         <PackageReference Include="MailKitLite" Version="3.4.2" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\TraderBot.Abstractions\TraderBot.Abstractions.csproj" />
+        <ProjectReference Include="..\TraderBot.RavenDb\TraderBot.RavenDb.csproj" />
     </ItemGroup>
     
     <ItemGroup>

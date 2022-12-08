@@ -16,11 +16,11 @@
 
     {#if health}
         <div class="update-indicator">
-            Actual at <a title="Reload" href="javascript:void(0)" on:click={load}>{lastUpdatedAt}</a>
+            Actual at <a title="Reload" href={null} on:click={load}>{lastUpdatedAt}</a>
         </div>
     {:else}
         <div class="error">Communication error</div>
-        <a href="javascript:void(0)" on:click={load}>Try again</a>
+        <a href={null} on:click={load}>Try again</a>
     {/if}
 
     <div class="health">

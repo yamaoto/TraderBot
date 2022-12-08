@@ -9,8 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 
-builder.Services.AddGrpc();
-
 builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
 {
     builder.AllowAnyOrigin()
@@ -28,6 +26,10 @@ app.UseGrpcWeb();
 app.UseCors("AllowAll");
 
 app.MapGrpcService<AdminService>()
+    .EnableGrpcWeb()
+    .RequireCors("AllowAll");
+
+app.MapGrpcService<MailBoxService>()
     .EnableGrpcWeb()
     .RequireCors("AllowAll");
 

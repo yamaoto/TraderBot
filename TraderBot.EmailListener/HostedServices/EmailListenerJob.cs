@@ -1,20 +1,21 @@
 using Microsoft.Extensions.Options;
 using TraderBot.EmailListener.Infrastructure;
+using TraderBot.RavenDb.MailBoxDomain;
 
 namespace TraderBot.EmailListener.HostedServices;
 
 public class EmailListenerJob : BackgroundService
 {
-    private readonly MailBoxStore _mailBoxStore;
+    private readonly IMailBoxDal _mailBoxDal;
     private readonly EmailChannel _emailChannel;
     private readonly IOptions<MailBoxOptions> _mailBoxOptions;
     private readonly Dictionary<string, EmailListenerStateMachine> Listeners;
 
 
-    public EmailListenerJob(MailBoxStore mailBoxStore, EmailChannel emailChannel,
+    public EmailListenerJob(IMailBoxDal mailBoxDal, EmailChannel emailChannel,
         IOptions<MailBoxOptions> mailBoxOptions)
     {
-        _mailBoxStore = mailBoxStore;
+        _mailBoxDal = mailBoxDal;
         _emailChannel = emailChannel;
         _mailBoxOptions = mailBoxOptions;
         Listeners = new Dictionary<string, EmailListenerStateMachine>();
@@ -24,19 +25,20 @@ public class EmailListenerJob : BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            foreach (var mailBox in _mailBoxStore.GetAll())
+            var mailBoxes = await _mailBoxDal.GetMailBoxesAsync(cancellationToken);
+            foreach (var mailBox in mailBoxes)
             {
-                if (!Listeners.ContainsKey(mailBox.MailBoxName))
+                if (!Listeners.ContainsKey(mailBox.Name))
                 {
-                    Listeners[mailBox.MailBoxName] = new EmailListenerStateMachine(_emailChannel, _mailBoxOptions,
+                    Listeners[mailBox.Name] = new EmailListenerStateMachine(_emailChannel, _mailBoxOptions,
                         mailBox, EmailListenerStatus.New);
                 }
 
-                if (Listeners[mailBox.MailBoxName].State == EmailListenerStatus.Error)
+                if (Listeners[mailBox.Name].State == EmailListenerStatus.Error)
                 {
                     continue;
                 }
-                await Listeners[mailBox.MailBoxName].ExecuteNextAction(cancellationToken);
+                await Listeners[mailBox.Name].ExecuteNextAction(cancellationToken);
             }
 
             await Task.Delay(100, cancellationToken);

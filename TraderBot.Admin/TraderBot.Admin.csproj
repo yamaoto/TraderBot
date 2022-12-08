@@ -14,6 +14,8 @@
 
     <ItemGroup>
         <Protobuf Include="..\Protos\admin.proto" Link="Protos\admin.proto" />
+        <Protobuf Include="..\Protos\mail_box.proto" Link="Protos\mail_box.proto" />
+        <Protobuf Include="..\Protos\types.proto" Link="Protos\types.proto" />
     </ItemGroup>
 
     <ItemGroup>

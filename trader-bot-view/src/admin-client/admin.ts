@@ -45,6 +45,10 @@ export interface Order {
      * @generated from protobuf field: string createdAt = 7;
      */
     createdAt: string;
+    /**
+     * @generated from protobuf field: string status = 8;
+     */
+    status: string;
 }
 /**
  * @generated from protobuf message admin.GetOrdersResponse
@@ -65,11 +69,12 @@ class Order$Type extends MessageType<Order> {
             { no: 4, name: "price", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 5, name: "quantity", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 6, name: "from", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "createdAt", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 7, name: "createdAt", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "status", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Order>): Order {
-        const message = { id: "", tradingSymbol: "", orderSide: "", price: "", quantity: "", from: "", createdAt: "" };
+        const message = { id: "", tradingSymbol: "", orderSide: "", price: "", quantity: "", from: "", createdAt: "", status: "" };
         globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
         if (value !== undefined)
             reflectionMergePartial<Order>(this, message, value);
@@ -100,6 +105,9 @@ class Order$Type extends MessageType<Order> {
                     break;
                 case /* string createdAt */ 7:
                     message.createdAt = reader.string();
+                    break;
+                case /* string status */ 8:
+                    message.status = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -134,6 +142,9 @@ class Order$Type extends MessageType<Order> {
         /* string createdAt = 7; */
         if (message.createdAt !== "")
             writer.tag(7, WireType.LengthDelimited).string(message.createdAt);
+        /* string status = 8; */
+        if (message.status !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.status);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

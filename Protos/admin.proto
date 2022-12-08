@@ -18,6 +18,7 @@ message Order {
   string quantity = 5;
   string from = 6;
   string createdAt = 7;
+  string status = 8;
 }
 
 message GetOrdersResponse {
