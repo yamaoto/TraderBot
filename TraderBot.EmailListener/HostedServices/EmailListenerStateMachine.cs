@@ -122,7 +122,7 @@ public class EmailListenerStateMachine : IDisposable
 
     private void CleanProcessedMessages()
     {
-        var expired = DateTime.Now.AddMinutes(-10);
+        var expired = DateTime.Now.AddHours(-2);
         foreach (var (key, timestamp) in _processedMessages.ToList())
         {
             if (expired > timestamp)
