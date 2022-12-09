@@ -11,12 +11,12 @@ public class OpenPositionHandler : BaseParser
 
     public TraderWagonOpenSpotParameters ParseOpenPosition(EmailMessage message)
     {
-        var beginning = message.TextBody.IndexOf("Your copied position from");
-        var marker = message.TextBody.IndexOf("successfully opened");
-        var from = message.TextBody.Substring(beginning + 26, marker - beginning - 26 - 11);
-        var atText = message.TextBody.Substring(marker + 23, 19);
+        var beginning = message.HtmlBody.IndexOf("Your copied position from", StringComparison.InvariantCulture);
+        var marker = message.HtmlBody.IndexOf("successfully opened", StringComparison.InvariantCulture);
+        var from = message.HtmlBody.Substring(beginning + 26, marker - beginning - 26 - 11);
+        var atText = message.HtmlBody.Substring(marker + 23, 19);
         var parametersLine =
-            message.TextBody.Substring(marker + 49, message.TextBody.IndexOf('\n', marker) - marker - 49);
+            message.HtmlBody.Substring(marker + 49, message.HtmlBody.IndexOf('\n', marker) - marker - 49);
         var parameters = SplitParameters(parametersLine);
         if (!parameters.ContainsKey("open price") || !TryParseAmount(parameters["open price"], out var openPrice))
             throw new InvalidOperationException("There is no open price parameter found in message");

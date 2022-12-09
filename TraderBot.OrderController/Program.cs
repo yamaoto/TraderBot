@@ -14,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc();
 builder.Services.Configure<DependencyOptions>(builder.Configuration.GetSection("Dependency"));
 builder.Services.Configure<TradingOptions>(builder.Configuration.GetSection("Trading"));
-builder.Services.Configure<FollowOptions>(builder.Configuration.GetSection("Follow"));
 builder.Services.AddGrpcClient<SpotGrpc.SpotGrpcClient>((services, options) =>
 {
     var dependencyOptions = services.GetService<IOptions<DependencyOptions>>();

@@ -22,7 +22,8 @@ public class MailBoxService : MailBoxGrpc.MailBoxGrpcBase
             .Select(s => new MailBoxSettings()
             {
                 Name = s.Name,
-                Username = s.Username
+                Username = s.Username,
+                AllowedCopyFrom = { s.AllowedCopyFrom }
             });
         return new GetMailBoxesResponse()
         {
@@ -41,6 +42,7 @@ public class MailBoxService : MailBoxGrpc.MailBoxGrpcBase
                 ErrorMessage = "Fill name"
             };
         }
+
         if (string.IsNullOrWhiteSpace(request.Username))
         {
             return new UpsertMailBoxResponse()
@@ -49,7 +51,9 @@ public class MailBoxService : MailBoxGrpc.MailBoxGrpcBase
                 ErrorMessage = "Fill username"
             };
         }
-        if (string.IsNullOrWhiteSpace(request.Password))
+
+        var existing = await _mailBoxDal.GetMailBoxAsync(request.Name, context.CancellationToken);
+        if (existing == null && string.IsNullOrWhiteSpace(request.Password))
         {
             return new UpsertMailBoxResponse()
             {
@@ -57,15 +61,25 @@ public class MailBoxService : MailBoxGrpc.MailBoxGrpcBase
                 ErrorMessage = "password name"
             };
         }
-        await _mailBoxDal.UpsertMailBoxAsync(new MailBoxSettingRecord(request.Name, request.Username, request.Password,
-            request.BinanceApiKey, request.BinanceApiSecret));
+
+        await _mailBoxDal.UpsertMailBoxAsync(
+            new MailBoxSettingRecord(request.Name,
+                request.Username,
+                request.Password == "" && existing != null ? existing.Password : request.Password,
+                request.BinanceApiKey == "" && existing != null ? existing.BinanceApiKey : request.BinanceApiKey,
+                request.BinanceApiSecret == "" && existing != null
+                    ? existing.BinanceApiSecret
+                    : request.BinanceApiSecret,
+                request.AllowedCopyFrom
+            ), context.CancellationToken);
         return new UpsertMailBoxResponse()
         {
             Result = true
         };
     }
 
-    public override async Task<DeleteMailBoxResponse> DeleteMailBox(DeleteMailBoxRequest request, ServerCallContext context)
+    public override async Task<DeleteMailBoxResponse> DeleteMailBox(DeleteMailBoxRequest request,
+        ServerCallContext context)
     {
         await _mailBoxDal.DeleteMailBoxAsync(request.Name);
         return new DeleteMailBoxResponse()

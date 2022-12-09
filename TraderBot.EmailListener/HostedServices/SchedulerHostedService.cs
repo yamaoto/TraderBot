@@ -15,6 +15,7 @@ public class SchedulerHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting SchedulerHostedService background service");
         while (!cancellationToken.IsCancellationRequested)
         {
             await Task.Delay(100, cancellationToken);

@@ -56,12 +56,12 @@ public class SpotService : SpotGrpc.SpotGrpcBase
         }
     }
 
-    public override async Task<GetUsdtBalanceResponse> GetUsdtBalance(Empty _, ServerCallContext context)
+    public override async Task<GetUsdtBalanceResponse> GetUsdtBalance(GetUsdtBalanceRequest request, ServerCallContext context)
     {
         var openSpotCommand = _serviceProvider.GetRequiredService<GetFuturesBalanceRequest>();
         try
         {
-            var result = await openSpotCommand.GetFuturesBalanceAsync();
+            var result = await openSpotCommand.GetFuturesBalanceAsync(request.Mailbox);
             return new GetUsdtBalanceResponse
             {
                 Result = true,

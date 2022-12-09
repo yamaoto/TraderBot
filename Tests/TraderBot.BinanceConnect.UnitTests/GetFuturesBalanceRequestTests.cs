@@ -1,10 +1,12 @@
 using System.Globalization;
 using System.Net;
 using Microsoft.Extensions.Options;
+using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using TraderBot.BinanceConnect.Commands;
 using TraderBot.BinanceConnect.Infrastructure;
+using TraderBot.RavenDb.MailBoxDomain;
 
 namespace TraderBot.BinanceConnect.UnitTests;
 
@@ -28,21 +30,23 @@ public class GetFuturesBalanceRequestTests
                 updateTime = 1669223878607
             }
         };
+        var mailBox = new MailBoxSettingRecord("Name", "username", "password", "binanceKey", "binanceSecret",
+            Array.Empty<string>());
+        var mailBoxDalStub = new StubMailBoxDal();
+        await mailBoxDalStub.UpsertMailBoxAsync(mailBox);
         var mockHttp = new MockHttpMessageHandler();
         var method = mockHttp
             .When("https://testnet.binancefuture.com/fapi/v2/balance")
             .Respond(HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(testData));
         var client = mockHttp.ToHttpClient();
         client.BaseAddress = new Uri("https://testnet.binancefuture.com");
-        var command = new GetFuturesBalanceRequest(client, new OptionsWrapper<BinanceOptions>(new BinanceOptions
+        var command = new GetFuturesBalanceRequest(mailBoxDalStub, client, new OptionsWrapper<BinanceOptions>(new BinanceOptions
         {
-            ApiKey = "123",
-            SecretKey = "456",
             UseTestnet = true
         }));
 
         // Act
-        var result = await command.GetFuturesBalanceAsync();
+        var result = await command.GetFuturesBalanceAsync(mailBox.Name);
 
         // Assert
         Assert.Equal(1, mockHttp.GetMatchCount(method));

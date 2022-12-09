@@ -1,6 +1,7 @@
 using TraderBot.BinanceConnect.Commands;
 using TraderBot.BinanceConnect.Infrastructure;
 using TraderBot.BinanceConnect.Services;
+using TraderBot.RavenDb;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.Configure<BinanceOptions>(binanceConfiguration);
 builder.Services.AddGrpc();
 builder.Services.AddTransient<OpenSpotCommand>();
 builder.Services.AddTransient<GetFuturesBalanceRequest>();
+await builder.Services.AddAndConfigureRavenDbAsync(builder.Configuration);
 
 var binanceOptions = binanceConfiguration.Get<BinanceOptions>();
 builder.Services.AddHttpClient<OpenSpotCommand>()

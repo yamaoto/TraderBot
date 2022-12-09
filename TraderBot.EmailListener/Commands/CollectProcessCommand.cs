@@ -43,7 +43,8 @@ public class CollectProcessCommand
                         From = openParameters.From,
                         OrderSide = openParameters.OpeningSide.Value == "SELL" ? OrderSideType.Sell : OrderSideType.Buy,
                         Price = openParameters.Price.ConvertToTypesProtoDecimal(),
-                        TradingSymbol = openParameters.TradingSymbol.Value
+                        TradingSymbol = openParameters.TradingSymbol.Value,
+                        Mailbox = message.Mailbox
                     });
                     if (!response.Result)
                         _logger.LogError(

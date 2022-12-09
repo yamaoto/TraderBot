@@ -9,7 +9,7 @@ package binance_connect;
 
 service SpotGrpc {
   rpc OpenSpot (OpenSpotRequest) returns (OpenSpotResponse);
-  rpc GetUsdtBalance (google.protobuf.Empty) returns (GetUsdtBalanceResponse);
+  rpc GetUsdtBalance (GetUsdtBalanceRequest) returns (GetUsdtBalanceResponse);
 }
 
 
@@ -18,7 +18,12 @@ message OpenSpotRequest {
   string trading_symbol = 1;
   types.OrderSideType order_side = 2;
   types.Decimal price = 3;
-  types.Decimal quantity = 4; 
+  types.Decimal quantity = 4;
+  string mailbox = 5;
+}
+
+message GetUsdtBalanceRequest {
+  string mailbox = 1;
 }
 
 message OpenSpotResponse {

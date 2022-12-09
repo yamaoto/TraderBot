@@ -15,6 +15,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\TraderBot.Abstractions\TraderBot.Abstractions.csproj" />
+        <ProjectReference Include="..\TraderBot.RavenDb\TraderBot.RavenDb.csproj" />
     </ItemGroup>
 
     <ItemGroup>

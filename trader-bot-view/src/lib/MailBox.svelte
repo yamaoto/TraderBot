@@ -14,11 +14,13 @@
         binanceApiSecret: "",
         allowedCopyFrom: [],
     };
+    let allowedCopyFrom = [];
 
     onMount(() => {
         mailBoxEdit = {
             ...mailBox,
         };
+        allowedCopyFrom = mailBoxEdit.allowedCopyFrom;
     });
 
     const dispatch = createEventDispatcher();
@@ -27,13 +29,15 @@
         edit = false;
         dispatch("save", {
             ...mailBoxEdit,
+            allowedCopyFrom: [
+                ...allowedCopyFrom
+            ]
         });
         mailBoxEdit = {
-            ...mailBox,
+            ...mailBox
         };
-        e.preventDefault();
     };
-    const onCancel = ()=>{
+    const onCancel = () => {
         mailBoxEdit = {
             ...mailBox,
         };
@@ -51,6 +55,9 @@
         };
         edit = true;
     };
+    const addCopyFrom = () => {
+        allowedCopyFrom = [...allowedCopyFrom, "Type trader name here"]
+    }
 </script>
 
 {#if edit}
@@ -77,10 +84,22 @@
                 <label for="binanceApiSecret">Binance API Secret: </label>
                 <input name="binanceApiSecret" type="password" bind:value={mailBoxEdit.binanceApiSecret} />
             </div>
+            <div class="form-field">
+                <span>Copying allow list: </span>
+                <ul>
+                    {#each allowedCopyFrom as item, index}
+                    <li>
+                        <input type="text" bind:value={allowedCopyFrom[index]}/>
+                    </li>
+                    {/each}
+                </ul>
+                <button type="button" on:click={addCopyFrom}>+</button>
+                
+            </div>
             <div class="actions">
-                <button on:click={onSave}>Save</button>
-                <button on:click={onCancel}>Cancel</button>
-                <button on:click={onDelete}>Delete</button>
+                <button type="button" on:click={onSave}>Save</button>
+                <button type="button" on:click={onCancel}>Cancel</button>
+                <button type="button" on:click={onDelete}>Delete</button>
             </div>
         </form>
     </div>

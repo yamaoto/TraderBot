@@ -29,8 +29,8 @@ public class FuturesTradeClient : BinanceService
             ["side"] = openSpotParameters.OrderSide == OrderSideType.Sell ? "SELL" : "BUY",
             ["type"] = "LIMIT",
             ["recvWindow"] = 5000,
-            ["quantity"] = openSpotParameters.Quantity.ConvertToRegularDecimal().ToString(CultureInfo.InvariantCulture),
-            ["price"] = openSpotParameters.Price.ConvertToRegularDecimal().ToString(CultureInfo.InvariantCulture),
+            ["quantity"] = (openSpotParameters.Quantity.ConvertToRegularDecimal()/1.000000000000000000000000000000000m).ToString(CultureInfo.InvariantCulture),
+            ["price"] = (openSpotParameters.Price.ConvertToRegularDecimal()/1.000000000000000000000000000000000m).ToString(CultureInfo.InvariantCulture),
             ["timeInForce"] = "GTC",
             ["timestamp"] = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
         };

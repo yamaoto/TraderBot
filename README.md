@@ -35,55 +35,7 @@ Process:
 
 https://www.binance.com/en/support/faq/how-to-test-my-functions-on-binance-testnet-ab78f9a1b8824cf0a106b4229c76496d
 
-2. Set secret local credentials for Binance:
-
-Api Key:
-
-> cd TraderBot.BinanceConnect
-> dotnet user-secrets set "Binance:ApiKey" <api-key>
-
-Secret Key:
-
-> cd TraderBot.BinanceConnect
-> dotnet user-secrets set "Binance:SecretKey" <secret-key>
-
-3. Configure IMAP mailbox
-
-> cd TraderBot.EmailListener
-> vi appsettings.json
-
-```json
-{
-    "MailBox": {
-        "MailBoxName": "Test",
-        "Host": "imap.gmail.com",
-        "Username": "<username>",
-        "Password": "<password>",
-        "GetFrom": "do-not-reply@post.traderwagon.com"
-    }
-}
-```
-
-Almost all modern Email services uses two-factor authentication mechanism so,
-you should probably generate a custom access password for th application.
-
-4. Configure database connection
-
-> cd TraderBot.OrderController
-> vi appsettings.json
-
-```json
-{
-    "RavenDb": {
-        "DatabaseName": "traderbot",
-        "Urls": ["http://127.0.0.1:8080"]
-    }
-}
-```
-
-Set database name and endpoints
-
-5. Run components: RavenDb, `TraderBot.EmailListener`, `TraderBot.BinanceConnect`, `TraderBot.OrderController`
+2. Run application
 
 Option 1. Development:
 
@@ -91,7 +43,22 @@ Just use your favorite IDE
 
 Option 2. User:
 
+> cat ./.env.example > ./.env
+
+Set telegram credentials in  `.env` file
+
+`TELEGRAM_KEY` - Key from your Telegram Bot
+`TELEGRAM_CHAT` - Default chat id where application will post messages
+
+Start database first
+
+> docker-compose up -d ravendb
+
+Start application
+
 > docker-compose up
+
+3. Open [http://127.0.0.1:5173/](http://127.0.0.1:5173/) in browser
 
 # Tests
 

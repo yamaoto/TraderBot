@@ -5,5 +5,6 @@ public record MailBoxSettingRecord(
     string Username,
     string Password,
     string BinanceApiKey,
-    string BinanceApiSecret
-);
+    string BinanceApiSecret,
+    IEnumerable<string> AllowedCopyFrom
+    );

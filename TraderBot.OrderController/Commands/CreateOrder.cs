@@ -5,6 +5,7 @@ using TraderBot.Abstractions;
 using TraderBot.BinanceConnectProto;
 using TraderBot.OrderController.Infrastructure;
 using TraderBot.OrderControllerProto;
+using TraderBot.RavenDb.MailBoxDomain;
 using TraderBot.RavenDb.OrderDomain;
 using TraderBot.TypesProto;
 
@@ -14,34 +15,35 @@ public class CreateOrder
 {
     private readonly ILogger<CreateOrder> _logger;
     private readonly IOrderDal _orderDal;
+    private readonly IMailBoxDal _mailBoxDal;
     private readonly IGetExchangeStepSize _getExchangeStepSize;
     private readonly SpotGrpc.SpotGrpcClient _spotServiceClient;
     private readonly ITelegramService _telegramService;
     private readonly IOptions<TradingOptions> _tradingOptions;
-    private readonly IOptions<FollowOptions> _followOptions;
 
     public CreateOrder(
         IOrderDal orderDal,
+        IMailBoxDal mailBoxDal,
         IGetExchangeStepSize getExchangeStepSize,
         SpotGrpc.SpotGrpcClient spotServiceClient,
         ITelegramService telegramService,
         IOptions<TradingOptions> tradingOptions,
-        IOptions<FollowOptions> followOptions,
         ILogger<CreateOrder> logger
     )
     {
         _orderDal = orderDal;
+        _mailBoxDal = mailBoxDal;
         _getExchangeStepSize = getExchangeStepSize;
         _spotServiceClient = spotServiceClient;
         _telegramService = telegramService;
         _tradingOptions = tradingOptions;
-        _followOptions = followOptions;
         _logger = logger;
     }
 
     public async Task CreateOrderAsync(CreateOrderRequest request)
     {
-        if (!_followOptions.Value.Allowed.Contains(request.From))
+        var mailBox = await _mailBoxDal.GetMailBoxAsync(request.Mailbox);
+        if (mailBox == null || !mailBox.AllowedCopyFrom.Contains(request.From))
         {
             return;
         }
@@ -58,13 +60,20 @@ public class CreateOrder
             return;
         }
 
-        var balance = await GetFuturesBalanceAsync();
+        var balance = await GetFuturesBalanceAsync(mailBox.Name);
         var tradingOptions = _tradingOptions.Value.GetOptionsForSymbol(request.TradingSymbol);
         var originalQuantity = balance * tradingOptions.Rate / price;
 
-        var symbolStepSize = await _getExchangeStepSize.GetExchangeStepSizeAsync(request.TradingSymbol);
-        var quantity = Math.Floor(originalQuantity / symbolStepSize) * symbolStepSize;
-        
+        var symbolInfo = await _getExchangeStepSize.GetExchangeSymbolInfoAsync(request.TradingSymbol);
+        var quantity = Math.Floor(originalQuantity / symbolInfo.StepSize) * symbolInfo.StepSize;
+        if (quantity < symbolInfo.MinimalQuantity)
+        {
+            quantity = symbolInfo.MinimalQuantity;
+        }
+        if (quantity > symbolInfo.MaximalQuantity)
+        {
+            quantity = symbolInfo.MaximalQuantity;
+        }
         // save draft order record
         await UpsertOrderRecordAsync(request, id, timestamp, orderSide, quantity, OrderStatus.No);
 
@@ -73,7 +82,8 @@ public class CreateOrder
             TradingSymbol = request.TradingSymbol,
             OrderSide = request.OrderSide,
             Price = request.Price,
-            Quantity = quantity.ConvertToTypesProtoDecimal()
+            Quantity = quantity.ConvertToTypesProtoDecimal(),
+            Mailbox = mailBox.Name
         };
         // TODO: Add external binance id for order
         var openSpotResponse = await _spotServiceClient.OpenSpotAsync(openSpotRequest);
@@ -96,6 +106,7 @@ public class CreateOrder
         await _orderDal.UpsertOrderAsync(new OrderRecord
         {
             Id = id.ToString(),
+            Mailbox = request.Mailbox,
             Symbol = request.TradingSymbol,
             CopyFrom = request.From,
             OrderCreatedAt = timestamp,
@@ -106,9 +117,12 @@ public class CreateOrder
         });
     }
 
-    private async Task<decimal> GetFuturesBalanceAsync()
+    private async Task<decimal> GetFuturesBalanceAsync(string mailbox)
     {
-        var balanceResponse = await _spotServiceClient.GetUsdtBalanceAsync(new Empty());
+        var balanceResponse = await _spotServiceClient.GetUsdtBalanceAsync(new GetUsdtBalanceRequest()
+        {
+            Mailbox = mailbox
+        });
         if (!balanceResponse.Result)
         {
             var errorMessage =

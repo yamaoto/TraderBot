@@ -1,10 +1,12 @@
 using System.Net;
 using Microsoft.Extensions.Options;
+using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using TraderBot.BinanceConnect.Commands;
 using TraderBot.BinanceConnect.Infrastructure;
 using TraderBot.BinanceConnectProto;
+using TraderBot.RavenDb.MailBoxDomain;
 using TraderBot.TypesProto;
 
 namespace TraderBot.BinanceConnect.UnitTests;
@@ -43,16 +45,18 @@ public class OpenSpotCommandTests
             origType = "LIMIT",
             updateTime = 1669274238162
         };
+        var mailBox = new MailBoxSettingRecord("Name", "username", "password", "binanceKey", "binanceSecret",
+            Array.Empty<string>());
+        var mailBoxDalStub = new StubMailBoxDal();
+        await mailBoxDalStub.UpsertMailBoxAsync(mailBox);
         var mockHttp = new MockHttpMessageHandler();
         var method = mockHttp
             .When("https://testnet.binancefuture.com/fapi/v1/order")
             .Respond(HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(testData));
         var client = mockHttp.ToHttpClient();
         client.BaseAddress = new Uri("https://testnet.binancefuture.com");
-        var command = new OpenSpotCommand(client, new OptionsWrapper<BinanceOptions>(new BinanceOptions
+        var command = new OpenSpotCommand(mailBoxDalStub, client, new OptionsWrapper<BinanceOptions>(new BinanceOptions
         {
-            ApiKey = "123",
-            SecretKey = "456",
             UseTestnet = true
         }));
 
@@ -62,7 +66,8 @@ public class OpenSpotCommandTests
                 TradingSymbol = symbol,
                 OrderSide = orderSide == "SELL" ? OrderSideType.Sell : OrderSideType.Buy,
                 Quantity = quantity.ConvertToTypesProtoDecimal(),
-                Price = price.ConvertToTypesProtoDecimal()
+                Price = price.ConvertToTypesProtoDecimal(),
+                Mailbox = "Name"
             };
 
         // Act

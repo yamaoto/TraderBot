@@ -16,5 +16,7 @@ internal class ExchangeInfoModel
     {
         public string FilterType { get; set; } = "";
         public string StepSize { get; set; } = "";
+        public string MinQty { get; set; } = "";
+        public string MaxQty { get; set; } = "";
     }
 }

@@ -6,15 +6,16 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["TraderBot.Admin/TraderBot.Admin.csproj", "TraderBot.Admin/"]
+COPY ["TraderBot.RavenDb/TraderBot.RavenDb.csproj", "TraderBot.RavenDb/TraderBot.RavenDb.csproj"]
 RUN dotnet restore "TraderBot.Admin/TraderBot.Admin.csproj"
 COPY . .
 WORKDIR "/src/TraderBot.Admin"
-RUN dotnet build "TraderBot.Admin.csproj" -c Release -o /app/build
+# RUN dotnet build "TraderBot.Admin.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TraderBot.Admin.csproj" -c Release -o /app/publish
+RUN dotnet publish "TraderBot.Admin.csproj" -c Release -o /app/publish -r linux-x64 -p:PublishSingleFile=true --self-contained
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0.0-jammy-chiseled-amd64 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TraderBot.Admin.dll"]
+ENTRYPOINT ["/app/TraderBot.Admin"]

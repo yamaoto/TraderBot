@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Polly;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Exceptions;
@@ -18,16 +19,36 @@ public static class RavenDb
         var ravenDbConfigurationSection = configuration.GetSection("RavenDb");
         services.Configure<RavenDbOptions>(ravenDbConfigurationSection);
         var ravenDbConfiguration = ravenDbConfigurationSection.Get<RavenDbOptions>();
+        if (ravenDbConfiguration == null)
+        {
+            throw new InvalidOperationException("You must configure RavenDb section");
+        }
         var store = new DocumentStore
         {
-            Urls = ravenDbConfiguration!.Urls.ToArray(),
+            Urls = new[] { ravenDbConfiguration.Endpoint },
             Database = ravenDbConfiguration.DatabaseName
         }.Initialize();
         services.AddSingleton(store);
-        services.AddTransient<IOrderDal, RavenOrderDal>();
-        services.AddTransient<IMailBoxDal, RavenMailBoxDal>();
+        if (ravenDbConfiguration.UseStub)
+        {
+            
+            services.AddSingleton<IOrderDal, StubOrderDal>();
+            services.AddSingleton<IMailBoxDal, StubMailBoxDal>();
+        }
+        else
+        {
+            services.AddTransient<IOrderDal, RavenOrderDal>();
+            services.AddTransient<IMailBoxDal, RavenMailBoxDal>();
+        }
 
-        await EnsureDatabaseExistsAsync(store, ravenDbConfiguration);
+        await Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(new[]
+            {
+                TimeSpan.FromSeconds(3),
+                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(10)
+            }).ExecuteAsync(async () => await EnsureDatabaseExistsAsync(store, ravenDbConfiguration));
     }
 
     private static async Task EnsureDatabaseExistsAsync(IDocumentStore store, RavenDbOptions options)
@@ -40,13 +61,7 @@ public static class RavenDb
         }
         catch (DatabaseDoesNotExistException)
         {
-            try
-            {
-                await store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord(database)));
-            }
-            catch (ConcurrencyException)
-            {
-            }
+            await store.Maintenance.Server.SendAsync(new CreateDatabaseOperation(new DatabaseRecord(database)));
         }
     }
 }

@@ -15,6 +15,7 @@ message CreateOrderRequest {
   types.OrderSideType order_side = 2;
   types.Decimal price = 3;
   string from = 4;
+  string mailbox = 5;
 }
 
 

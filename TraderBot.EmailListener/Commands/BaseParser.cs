@@ -6,7 +6,7 @@ public abstract class BaseParser
 {
     public abstract bool IsApplicable(EmailMessage message);
 
-    public IReadOnlyDictionary<string, string> SplitParameters(string parametersLine)
+    public IReadOnlyDictionary<string, string> SplitParameters(string inputParameters)
     {
         var parameters = new Dictionary<string, string>();
         var start = 0;
@@ -14,6 +14,7 @@ public abstract class BaseParser
         var key = "";
         var value = "";
         var mode = 0;
+        var parametersLine = inputParameters.Trim().Replace("<br>", "");
         while (index < parametersLine.Length)
         {
             switch (mode)

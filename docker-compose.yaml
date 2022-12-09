@@ -1,0 +1,64 @@
+version: '2.2'
+services:
+  ravendb:
+    image: ravendb/ravendb:ubuntu-latest
+    ports:
+      - "8080:8080"
+  email:
+    build:
+      context: .
+      dockerfile: TraderBot.EmailListener/Dockerfile
+    ports:
+      - '0.0.0.0:5226:5226'
+    environment:
+      ASPNETCORE_URLS: 'http://+:5226'
+      DEPENDENCY__ORDERCONTROLLERSERVICEENDPOINT: 'http://order:5111'
+      RAVENDB__ENDPOINT: http://ravendb:8080
+    restart: on-failure
+    depends_on:
+      - order
+  binance:
+    build:
+      context: .
+      dockerfile: TraderBot.BinanceConnect/Dockerfile
+    ports:
+      - '0.0.0.0:5167:5167'
+    environment:
+      ASPNETCORE_URLS: 'http://+:5167'
+      RAVENDB__ENDPOINT: http://ravendb:8080
+    restart: on-failure
+  order:
+    build:
+      context: .
+      dockerfile: TraderBot.OrderController/Dockerfile
+    ports:
+      - '0.0.0.0:5111:5111'
+    environment:
+      ASPNETCORE_URLS: 'http://+:5111'
+      BINANCE__USETESTNET: true
+      TELEGRAM__DEFAULTCHATID: ${TELEGRAM_CHAT}
+      DEPENDENCY__SpotServiceEndpoint: 'http://binance:5167'
+      RAVENDB__ENDPOINT: http://ravendb:8080
+      TELEGRAM__URL: 'https://api.telegram.org/${TELEGRAM_KEY}'
+    restart: on-failure
+    depends_on:
+      - binance
+      - ravendb
+  admin:
+    build:
+      context: .
+      dockerfile: TraderBot.Admin/Dockerfile
+    ports:
+      - '0.0.0.0:5258:5258'
+    environment:
+      ASPNETCORE_URLS: 'http://+:5258'
+      RAVENDB__ENDPOINT: http://ravendb:8080
+    restart: on-failure
+    depends_on:
+      - binance
+      - ravendb
+  view:
+    build:
+      context: ./trader-bot-view
+    ports:
+      - "0.0.0.0:5173:80"
