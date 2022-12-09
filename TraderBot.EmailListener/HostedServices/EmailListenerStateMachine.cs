@@ -106,6 +106,11 @@ public class EmailListenerStateMachine : IDisposable
             var uidString = uid.ToString();
             if (_processedMessages.ContainsKey(uidString)) break;
             var message = await _imapClient.Inbox.GetMessageAsync(uid, cancellationToken);
+            if (message.Date < DateTime.Now.AddHours(-1))
+            {
+                continue;
+            }
+
             response.Add(new EmailMessage(_settings.Name, uid.ToString(), message.Subject, message.HtmlBody));
             _processedMessages[uidString] = DateTime.Now;
             _logger.LogDebug("Add to queue {MailBox} message with uid {Uid}", _settings.Name, uidString);
