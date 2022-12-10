@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "types.proto";
-import "google/protobuf/empty.proto";
 
 option csharp_namespace = "TraderBot.BinanceConnectProto";
 
