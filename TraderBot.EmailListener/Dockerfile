@@ -1,7 +1,5 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
@@ -19,4 +17,6 @@ RUN dotnet publish "TraderBot.EmailListener.csproj" -c Release -o /app/publish -
 FROM mcr.microsoft.com/dotnet/nightly/runtime-deps:7.0.0-jammy-chiseled-amd64 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+EXPOSE 8080
+USER app
 ENTRYPOINT ["/app/TraderBot.EmailListener"]

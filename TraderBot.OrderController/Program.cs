@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using Prometheus;
 using TraderBot.BinanceConnectProto;
 using TraderBot.OrderController.Commands;
 using TraderBot.OrderController.Infrastructure;
@@ -19,7 +20,17 @@ builder.Services.AddGrpcClient<SpotGrpc.SpotGrpcClient>((services, options) =>
     var dependencyOptions = services.GetService<IOptions<DependencyOptions>>();
     options.Address = new Uri(dependencyOptions!.Value.SpotServiceEndpoint);
 });
+
+builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+{
+    builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .WithExposedHeaders("Grpc-Status", "Grpc-Message", "Grpc-Encoding", "Grpc-Accept-Encoding");
+}));
+
 await builder.Services.AddAndConfigureRavenDbAsync(builder.Configuration);
+
 builder.Services.Configure<TelegramOptions>(builder.Configuration.GetSection("Telegram"));
 builder.Services.AddTransient<ITelegramService, TelegramService>();
 builder.Services.AddSingleton<IGetExchangeStepSize, GetExchangeStepSize>();
@@ -28,12 +39,20 @@ builder.Services.AddHttpClient<GetExchangeStepSize>();
 
 builder.Services.AddTransient<CreateOrder>();
 
+builder.Services.AddHealthChecks()
+    .AddCheck<RavenDbHealthChecks>(nameof(RavenDbHealthChecks))
+    .ForwardToPrometheus();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseHttpMetrics();
+app.UseGrpcMetrics();
+
+app.UseCors("AllowAll");
+
 app.MapGrpcService<OrderControllerService>();
-app.MapGet("/",
-    () =>
-        "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+
+app.MapMetrics();
+app.MapHealthChecks("/health");
 
 app.Run();

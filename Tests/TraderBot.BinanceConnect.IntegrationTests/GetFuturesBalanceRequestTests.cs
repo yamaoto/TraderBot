@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using TraderBot.BinanceConnect.Commands;
 using TraderBot.RavenDb.MailBoxDomain;
-using TraderBot.RavenDb.OrderDomain;
 
 namespace TraderBot.BinanceConnect.IntegrationTests;
 

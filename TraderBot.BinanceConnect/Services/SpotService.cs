@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using TraderBot.Abstractions;
 using TraderBot.BinanceConnect.Commands;

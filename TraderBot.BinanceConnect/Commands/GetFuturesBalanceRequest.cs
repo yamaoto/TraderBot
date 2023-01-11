@@ -11,16 +11,19 @@ public class GetFuturesBalanceRequest
 {
     private readonly IMailBoxDal _mailBoxDal;
     private readonly HttpClient _httpClient;
+    private readonly BinanceMetrics _binanceMetrics;
     private readonly IOptions<BinanceOptions> _options;
 
     public GetFuturesBalanceRequest(
         IMailBoxDal mailBoxDal,
         HttpClient httpClient,
+        BinanceMetrics binanceMetrics,
         IOptions<BinanceOptions> options
     )
     {
         _mailBoxDal = mailBoxDal;
         _httpClient = httpClient;
+        _binanceMetrics = binanceMetrics;
         _options = options;
     }
 
@@ -37,7 +40,8 @@ public class GetFuturesBalanceRequest
 
         if (!decimal.TryParse(usdtBalance.AvailableBalance, CultureInfo.InvariantCulture, out var usdtBalanceAmount))
             throw new InvalidOperationException("Failed AvailableBalance parsing");
-
+        _binanceMetrics.GetUsdtBalance(mailbox)
+            .Set(Convert.ToDouble(usdtBalanceAmount));
         return usdtBalanceAmount;
     }
 }

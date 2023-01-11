@@ -1,3 +1,4 @@
+using Prometheus;
 using TraderBot.Admin.Services;
 using TraderBot.RavenDb;
 
@@ -19,7 +20,14 @@ builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
 
 await builder.Services.AddAndConfigureRavenDbAsync(builder.Configuration);
 
+builder.Services.AddHealthChecks()
+    .AddCheck<RavenDbHealthChecks>(nameof(RavenDbHealthChecks))
+    .ForwardToPrometheus();
+
 var app = builder.Build();
+
+app.UseHttpMetrics();
+app.UseGrpcMetrics();
 
 app.UseGrpcWeb();
 
@@ -32,5 +40,8 @@ app.MapGrpcService<AdminService>()
 app.MapGrpcService<MailBoxService>()
     .EnableGrpcWeb()
     .RequireCors("AllowAll");
+
+app.MapMetrics();
+app.MapHealthChecks("/health");
 
 app.Run();

@@ -11,6 +11,9 @@
     <ItemGroup>
         <PackageReference Include="Binance.Spot" Version="2.0.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.49.0" />
+        <PackageReference Include="prometheus-net.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="prometheus-net.AspNetCore.Grpc" Version="7.0.0" />
+        <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>

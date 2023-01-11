@@ -21,4 +21,6 @@ public class OrderSide
         orderSide = isValid ? new OrderSide(value) : null;
         return isValid;
     }
+
+    public override string ToString() => Value;
 }

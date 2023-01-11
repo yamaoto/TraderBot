@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using TraderBot.BinanceConnect.Commands;
 using TraderBot.BinanceConnect.Infrastructure;

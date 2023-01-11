@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.Extensions.Options;
-using Moq;
 using Newtonsoft.Json;
 using RichardSzalay.MockHttp;
 using TraderBot.BinanceConnect.Commands;
@@ -55,7 +54,7 @@ public class OpenSpotCommandTests
             .Respond(HttpStatusCode.OK, "application/json", JsonConvert.SerializeObject(testData));
         var client = mockHttp.ToHttpClient();
         client.BaseAddress = new Uri("https://testnet.binancefuture.com");
-        var command = new OpenSpotCommand(mailBoxDalStub, client, new OptionsWrapper<BinanceOptions>(new BinanceOptions
+        var command = new OpenSpotCommand(mailBoxDalStub, client, new BinanceMetrics(), new OptionsWrapper<BinanceOptions>(new BinanceOptions
         {
             UseTestnet = true
         }));

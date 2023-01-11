@@ -1,5 +1,4 @@
 using System.Text;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Options;
 using TraderBot.Abstractions;
 using TraderBot.BinanceConnectProto;

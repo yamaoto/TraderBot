@@ -1,14 +1,45 @@
 <script>
     import { onMount } from "svelte";
+    import axios from "axios";
 
     let lastUpdatedAt = "...loading";
     let health = true;
 
-    const load = async () => {};
+    const setStatusText = (health) => {
+        switch (health) {
+            case null:
+                return "👀 No information";
+            case "Healthy":
+                return "✅ Processing";
+            default:
+                return "💔 Unhealthy";
+        }
+    };
 
-    onMount(async () => await load());
+    let adminHealth = setStatusText();
+    let emailListenerHealth = setStatusText();
+    let binanceConnectHealth = setStatusText();
+    let orderControllerHealth = setStatusText();
 
-    setInterval(() => load().then(), 5000);
+    const load = () => {
+        lastUpdatedAt = new Date().toLocaleString();
+        axios
+            .get("http://localhost:5258/health")
+            .then((response) => (adminHealth = setStatusText(response.data)));
+        axios
+            .get("http://localhost:5226/health")
+            .then((response) => (emailListenerHealth = setStatusText(response.data)));
+        axios
+            .get("http://localhost:5167/health")
+            .then((response) => (binanceConnectHealth = setStatusText(response.data)));
+        axios
+            .get("http://localhost:5111/health")
+            .then((response) => (orderControllerHealth = setStatusText(response.data)));
+    };
+
+    onMount(() => load());
+
+    setInterval(() => load(), 5000);
 </script>
 
 <div class="root">
@@ -24,11 +55,10 @@
     {/if}
 
     <div class="health">
-        <p><span class="service">EmailListener</span>: 👀 No information</p>
-        <p><span class="service">Admin</span>: ✅ Processing</p>
-        <p><span class="service">BinanceConnect</span>: 💔 Unhealthy</p>
-        <p><span class="service">OrderController</span>: 👀 No information</p>
-        <p><span class="service">RavenDb</span>: 👀 No information</p>
+        <p><span class="service">EmailListener</span>: {emailListenerHealth}</p>
+        <p><span class="service">Admin</span>: {adminHealth}</p>
+        <p><span class="service">BinanceConnect</span>: {binanceConnectHealth}</p>
+        <p><span class="service">OrderController</span>: {orderControllerHealth}</p>
     </div>
 </div>
 

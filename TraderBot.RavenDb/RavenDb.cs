@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
-using Raven.Client.Exceptions;
 using Raven.Client.Exceptions.Database;
 using Raven.Client.ServerWide;
 using Raven.Client.ServerWide.Operations;
